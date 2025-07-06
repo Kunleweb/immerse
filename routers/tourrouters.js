@@ -1,13 +1,13 @@
 
 const express = require('express')
-const fs = require('fs');
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/../starter/dev-data/data/tours-simple.json`));
+// const fs = require('fs');
+// const tours = JSON.parse(fs.readFileSync(`${__dirname}/../starter/dev-data/data/tours-simple.json`));
 const router = express.Router();
 const tourController = require('./../controllers/tourController.js')
 
 
 
-router.param('id', tourController.checkID )
+// router.param('id', tourController.checkID )
 
 
 // Create a checkbody middleware
@@ -16,16 +16,13 @@ router.param('id', tourController.checkID )
 // Add it to the post handler stack
 
 
-
-
-
 router.route('/')
 .get(tourController.getAlltours)
-.post(tourController.checkbody,tourController.addtour);
+.post(tourController.addtour);
 
 router.route('/:id')
 .get(tourController.gettour)
-.patch(tourController.updatetour)
+.patch(tourController.updatetour)   
 .delete(tourController.deletetour)
 
 
