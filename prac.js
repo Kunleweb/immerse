@@ -12,6 +12,8 @@ const tours = JSON.parse(fs.readFileSync(`${__dirname}/starter/dev-data/data/tou
 app.use(express.json())
 
 
+
+
 if (process.env.NODE_ENV == 'development'){
     app.use(morgan('dev'))
 }
