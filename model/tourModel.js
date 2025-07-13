@@ -1,4 +1,5 @@
 const mongoose= require('mongoose'); 
+const slugify = require('slugify')
 
 const tourSchema = new mongoose.Schema({
     name: {type:String, required:[true, ' A tour must have a name'], unique: true,
@@ -45,8 +46,26 @@ const tourSchema = new mongoose.Schema({
         select: false
     }, 
     startDates: [Date]
-}); 
+}, {
 
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
+}
+
+); 
+
+
+
+tourSchema.virtual('durationWeeks').get(function(){
+    return this.duration/7;
+})
+
+
+// Document midelleware: runs before .save() and .create() does not wwork if it is .insertmany
+tourSchema.pre('save', function(){
+    this
+
+})
 
 const Tour = mongoose.model('Tour', tourSchema)
 
