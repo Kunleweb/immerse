@@ -3,7 +3,8 @@ const slugify = require('slugify')
 
 const tourSchema = new mongoose.Schema({
     name: {type:String, required:[true, ' A tour must have a name'], unique: true,
-        trim: true
+        trim: true, maxlength: [40, 'A tour name must have less than 40 characters'],
+        minlength: [10, 'more or equal than 10 characters']
     },
     slug : String,
     duration:{
@@ -18,7 +19,9 @@ const tourSchema = new mongoose.Schema({
         type: String,
         required: [true, 'A tour must have a difficulty']
     },
-    ratingsAverage: {type: Number, default: 4.5},
+    ratingsAverage: {type: Number, default: 4.5, min: [1, 'rating must be above 1.0'],
+         max: [5, 'rating must be above one']},
+    
     ratingsQuantity: {
         type: Number,
         default: 0
@@ -46,8 +49,12 @@ const tourSchema = new mongoose.Schema({
         default: Date.now(),
         select: false
     }, 
-    startDates: [Date]
-}, {
+    startDates: [Date], 
+    secretTour:{type: Boolean, 
+    default: false
+}
+},
+{
 
     toJSON: {virtuals: true},
     toObject: {virtuals: true}
@@ -79,6 +86,34 @@ tourSchema.pre('save', function(next){
 //     console.log(doc); 
 //     next()
 // })
+
+
+// QUERY MIDDLEWARE
+tourSchema.pre(/^find/, function(next){
+    this.find({secretTour:{$ne:true}})
+    this.start = Date.now();
+    next()
+})
+ 
+// At post, query has executed; we therefor have access to docs and we specify it in the function
+tourSchema.post(/^find/, function(docs, next){
+    console.log(`Query took ${Date.now()- this.start} milliseconds`);
+    // console.log(docs);
+    next();
+    this.find({secretTour:{$ne:true}})
+    next()
+})
+ 
+ 
+// AGGREGATION MIDDLEWARE 
+tourSchema.pre('aggregate', function(next){
+    this.pipeline().unshift({$match: {secretTour: {$ne: true}}})
+    console.log(this.pipeline());
+    next()
+})
+
+
+
 
 const Tour = mongoose.model('Tour', tourSchema)
 
