@@ -40,6 +40,9 @@ exports.getAlltours = async (req, res) => {
 
 
 
+
+
+
 exports.gettour = async (req, res) => {
   try {
     const tour = await Tour.findById(req.params.id);
