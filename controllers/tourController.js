@@ -40,11 +40,9 @@ exports.gettour = catchAsync(async (req, res, next) => {
   } res.status(200).json({status: "success", data: { tour }});
 });
 
+
 exports.addtour = catchAsync(async (req, res, next) => {
   const Newtour = await Tour.create(req.body);
-  if (!tour) {
-    return next(new AppError("No tour found with that ID", 404));
-  }
   res.status(201).json({ status: "success", data: { tour: Newtour } });
 });
 
@@ -53,6 +51,10 @@ exports.updatetour = catchAsync(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
+
+    if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
   res.status(200).json({ status: "success", data: { tour } });
 });
 
