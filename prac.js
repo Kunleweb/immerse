@@ -45,12 +45,13 @@ app.use(express.static(`${__dirname}/starter/public`))
 app.all('*', (req,res,next)=>{
     // res.status(404).json({status: 'fail', message: `Cant find ${req.originalUrl} on tbis server!`})
 
-    // const err = new Error(`Cant find ${req.originalUrl} on tbis server!`);
-    // err.status = 'fail';
-    // err.statusCode = 404;
+    const err = new Error(`Cant find ${req.originalUrl} on tbis server!`);
+    err.status = 'fail';
+    err.statusCode = 404;
+    next(err)
 
 // Why have we passed err into next function
-    next(new AppError(`Cant find ${req.originalUrl} on tbis server!`, 404))
+    // next(new AppError(`Cant find ${req.originalUrl} on this server!`, 404))
 
 })
 

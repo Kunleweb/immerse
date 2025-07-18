@@ -16,9 +16,7 @@ app.post('/', (req,res)=>{
 
 
 
-app.all('*', (req,res,next)=>{
-    res.status(404).json({status: 'fail', message: `Cant find ${req.originalUrl} on tbis server!`})
-})
+
 
 const port = 3000
 app.listen(3000,  ()=>{
