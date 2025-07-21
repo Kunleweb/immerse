@@ -4,8 +4,12 @@ const fs = require('fs');
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/../starter/dev-data/data/tours-simple.json`));
 const userController = require('./../controllers/userController')
 
+const authController = require('./../controllers/authController')
 
 const router = express.Router();
+
+
+router.post('/signup', authController.signup); 
 
 router.route('/')
 .get(userController.getAllusers)
