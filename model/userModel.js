@@ -9,7 +9,9 @@ const Userschema =  new mongoose.Schema({
         validate: [validator.isEmail, 'Please provide a valid email']
     },
     'photo':{type:String},
-    'password':{type:String, require:[true, 'please enter password'], minlength: 8},
+    'password':{type:String, require:[true, 'please enter password'], minlength: 8,
+        select:false
+    },
     'passwordConfirm':{type:String, require:[true, 'please enter password'],  minlength: 8,
         // This only works on  CREATE and SAVE!!! 
         validate:{validator: function(el){
@@ -31,7 +33,7 @@ Userschema.pre('save', async function(next){
 
     //  delete the passwrod confirm field
     this.passwordConfirm = undefined;
-    next()
+    next() 
     
 
 

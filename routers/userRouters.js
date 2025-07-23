@@ -3,13 +3,14 @@ const fs = require('fs');
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/../starter/dev-data/data/tours-simple.json`));
 const userController = require('./../controllers/userController')
-
 const authController = require('./../controllers/authController')
 
 const router = express.Router();
 
 
-router.post('/signup', authController.signup); 
+route.post('/signup', authController.signup); 
+route.post('/login', authController.login); 
+
 
 router.route('/')
 .get(userController.getAllusers)
