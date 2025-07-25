@@ -12,6 +12,8 @@ const Userschema =  new mongoose.Schema({
     'password':{type:String, require:[true, 'please enter password'], minlength: 8,
         select:false
     },
+    "role":{type:String, enum:['user', 'guide', 'lead-guide', 'admin'], default: 'user'},
+    
     'passwordConfirm':{type:String, require:[true, 'please enter password'],  minlength: 8,
         // This only works on  CREATE and SAVE!!! 
         validate:{validator: function(el){
@@ -50,16 +52,32 @@ Userschema.methods.correctPassword =async function(candidatePassword, userPasswo
 
 
 
-Userschema.methods.changedPasswordAfter = function(JWTTimestamp){
-    if (this.passwordChangedAt){
-        const changedTimestamp = parseInt(this.passwordChangedAt.getTime()/1000, 10)
+// Userschema.methods.changedPasswordAfter = function(JWTTimestamp){
+//     if (this.passwordChangedAt){
+//         const changedTimestamp = parseInt(this.passwordChangedAt.getTime()/1000, 10)
         
-        return JWTTimestamp < changedTimestamp;
-    }
+//         return JWTTimestamp < changedTimestamp;
+//     }
 
-    // false means not changed  and not changed means that the day or time at t=which the token was issued is less than the changed timstamp
-    return false; 
-}
+//     // false means not changed  and not changed means that the day or time at t=which the token was issued is less than the changed timstamp
+//     return false; 
+// }
+
+Userschema.methods.changedPasswordAfter = function(JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  // False means NOT changed
+  return false;
+};
+
+
 
 
 const User = mongoose.model('User', Userschema)

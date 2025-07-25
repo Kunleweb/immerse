@@ -16,7 +16,9 @@ exports.signup = catchAsync(async (req, res, next ) =>{
         email: req.body.email,
         password:req.body.password,
         passwordConfirm: req.body.passwordConfirm,
-        passwordChangedAt: req.body.passwordChangedAt})  
+        passwordChangedAt: req.body.passwordChangedAt,
+        role: req.body.role
+    })  
 
       const token = signToken(newUser._id )  
 
@@ -45,43 +47,102 @@ exports.login = catchAsync(async(req, res, next) => {
 
 
 
-exports.protect = catchAsync(async (req, res, next)=>{
-    let token;
-    // We need to get the token and check if its there
-    if (req.headers.authorization && 
-        req.headers.authorization.startsWith('Bearer')){
-         token = req.headers.authorization.split(' ')[1];
+// exports.protect = catchAsync(async (req, res, next)=>{
+//     let token;
+//     // We need to get the token and check if its there
+//     if (req.headers.authorization && 
+//         req.headers.authorization.startsWith('Bearer')){
+//          token = req.headers.authorization.split(' ')[1];
          
-    };
+//     };
 
-    if (!token){
-        return next(new AppError('You are not logged in! Please log in to get access', 401))
-    }
-    // we need to verify the token 
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
+//     if (!token){
+//         return next(new AppError('You are not logged in! Please log in to get access', 401))
+//     }
+//     // we need to verify the token 
+//     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
     
 
 
-    // we need to check if the user still exists
-    const freshUser = await User.findById(decoded.id); 
-    if(!freshUser){
-        return next(new AppError('The user with this token no longer exists', 401))
-    }
+//     // we need to check if the user still exists
+//     const currentUser = await User.findById(decoded.id); 
+//     if(!currentUser){
+//         return next(new AppError('The user with this token no longer exists', 401))
+//     }
 
 
-    // Check if user changed passwprd after the token was issued
+//     // Check if user changed passwprd after the token was issued
     
-    if(freshUser.changedPasswordAfter(decoded.iat)){
-        return next(new AppError('user recently changhed password, please log in again', 401))
-    }
+//     if(currentUser.changedPasswordAfter(decoded.iat)){
+//         return next(new AppError('user recently changhed password, please log in again', 401))
+//     }
 
 
     
 
 
 
-// Grant access to protected route  
-    req.user = freshUser;
-    next(); 
+// // Grant access to protected route  
+//     req.user = freshUser;
+//     next(); 
 
-})
+// })
+
+
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1) Getting token and check of it's there
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    return next(
+      new AppError('You are not logged in! Please log in to get access.', 401)
+    );
+  }
+
+  // 2) Verification token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  // 3) Check if user still exists
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return next(
+      new AppError(
+        'The user belonging to this token does no longer exist.',
+        401
+      )
+    );
+  }
+
+  // 4) Check if user changed password after the token was issued
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError('User recently changed password! Please log in again.', 401)
+    );
+  }
+
+  // GRANT ACCESS TO PROTECTED ROUTE
+  req.user = currentUser;
+  next();
+});
+
+
+
+
+exports.restrictTo = (...roles) => {
+    return (req, res, next) =>{
+        // roles is an array , so when a user has a role in the array then they 
+        // then they get permission, if there is not in the array then they do not get permission
+        // remember that our protect middleware will run before this as specified in tourroute
+        // this means we are using current user
+        if(!roles.includes(req.user.role)){
+            return next(new AppError('You don not habve permission to perfomr this action', 403))
+        }
+        next()
+    }
+}
