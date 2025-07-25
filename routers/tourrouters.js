@@ -4,7 +4,7 @@ const express = require('express')
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/../starter/dev-data/data/tours-simple.json`));
 const router = express.Router();
 const tourController = require('./../controllers/tourController.js')
-
+const authController = require('./../controllers/authController.js')
 
 
 // router.param('id', tourController.checkID )
@@ -25,7 +25,7 @@ router.route('/monthly-plan/:year')
 .get(tourController.getMonthlyPlan)
 
 router.route('/')
-.get(tourController.getAlltours)
+.get(authController.protect, tourController.getAlltours)
 .post(tourController.addtour);
 
 router.route('/:id')

@@ -18,7 +18,9 @@ const Userschema =  new mongoose.Schema({
             return el === this.password;    //abc ====xyz
         },  message : 'password not the same'
     }
-    } 
+    },
+    'passwordChangedAt': Date
+    
 
  
 })
@@ -44,6 +46,19 @@ Userschema.pre('save', async function(next){
 
 Userschema.methods.correctPassword =async function(candidatePassword, userPassword){
     return await bcrypt.compare(candidatePassword,userPassword)
+}
+
+
+
+Userschema.methods.changedPasswordAfter = function(JWTTimestamp){
+    if (this.passwordChangedAt){
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime()/1000, 10)
+        
+        return JWTTimestamp < changedTimestamp;
+    }
+
+    // false means not changed  and not changed means that the day or time at t=which the token was issued is less than the changed timstamp
+    return false; 
 }
 
 
