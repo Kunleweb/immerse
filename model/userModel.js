@@ -48,7 +48,14 @@ Userschema.pre('save', async function(next){
 
 })
 
+// this ensure paswword changed att property is always behing jwt timestamp
+Userschema.pre('save', function(next){
+    if (!this.isModified('password') || this.isNew ) return next();
 
+    this.passwordChangedAt = Date.now() - 1000;
+    next()
+
+})
 
 Userschema.methods.correctPassword =async function(candidatePassword, userPassword){
     return await bcrypt.compare(candidatePassword,userPassword)
@@ -95,10 +102,12 @@ Userschema.methods.changedPasswordAfter = function(JWTTimestamp) {
 
 
 Userschema.methods.createPasswordResetToken = function() {
-     console.log('ndn')
+    
 
   const resetToken = crypto.randomBytes(32).toString('hex');
 
+
+//   This encrypts the rest token in the database where this represents Useschema
   this.passwordResetToken = crypto
     .createHash('sha256')
     .update(resetToken)
