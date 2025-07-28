@@ -31,7 +31,14 @@ const Userschema =  new mongoose.Schema({
  
 })
 
+// this ensure paswword changed att property is always behing jwt timestamp
+Userschema.pre('save', function(next){
+    if (!this.isModified('password') || this.isNew ) return next();
 
+    this.passwordChangedAt = Date.now() - 1000;
+    next()
+
+})
 
 // Doocument middleware for password hashing ; this only runs this function if password was actually modfied 
 Userschema.pre('save', async function(next){
@@ -48,14 +55,7 @@ Userschema.pre('save', async function(next){
 
 })
 
-// this ensure paswword changed att property is always behing jwt timestamp
-Userschema.pre('save', function(next){
-    if (!this.isModified('password') || this.isNew ) return next();
 
-    this.passwordChangedAt = Date.now() - 1000;
-    next()
-
-})
 
 Userschema.methods.correctPassword =async function(candidatePassword, userPassword){
     return await bcrypt.compare(candidatePassword,userPassword)
