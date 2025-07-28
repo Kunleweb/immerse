@@ -25,7 +25,8 @@ const Userschema =  new mongoose.Schema({
     },
     'passwordChangedAt': Date,
     'passwordResetToken' : String,
-    'passwordResetExpires':Date
+    'passwordResetExpires':Date,
+    'active': {type:Boolean, dafault: true, select: false}
     
 
  
@@ -39,6 +40,15 @@ Userschema.pre('save', function(next){
     next()
 
 })
+
+Userschema.pre(/^find/, function(next){
+  // this points to the current query
+  this.find({active: {$ne:false}});
+  next()
+})
+
+
+
 
 // Doocument middleware for password hashing ; this only runs this function if password was actually modfied 
 Userschema.pre('save', async function(next){
