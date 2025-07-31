@@ -3,6 +3,9 @@ const morgan = require('morgan')
 const app = express()
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
+const mongoSanitize = require('express-mongo-sanitize')
+const xss = require('xss-clean')
+const hpp = require('hpp')
 const port = 8000
 const fs= require('fs')
 const AppError = require('./utils/appError')
@@ -15,6 +18,9 @@ const tours = JSON.parse(fs.readFileSync(`${__dirname}/starter/dev-data/data/tou
 // MIDDLEWARES
 // Security HTTP Headers
 app.use(helmet())
+
+
+
 
 // Rate limiting 
 
@@ -34,6 +40,8 @@ app.use('/api', limiter)
 if (process.env.NODE_ENV == 'development'){
     app.use(morgan('dev'))
 }
+// Body Parser, reading data from the body into req.body
+app.use(express.json());
 
 // Test Middlewares
 app.use((req, res, next) => {
@@ -41,6 +49,12 @@ app.use((req, res, next) => {
     next(); 
 })
 
+
+app.use(hpp(
+    {
+        whitelist: ['duration', 'ratingsQuantity','maxGroupSize', 'difficulty', 'price']
+    }
+))
 
 // ROute 
 
@@ -54,14 +68,19 @@ app.use('/api/v1/tours',  tourRouter)
 app.use('/api/v1/users',  userRouter)
 
 
-// Body Parser, reading data from the body into req.body
-app.use(express.json({limit: '10kb'}));
 
+
+// Data sanitization against noSQL query injection
+// removes all the dollar signs and dots 
+app.use(mongoSanitize());
+// Data sanitization against xss attacks
+app.use(xss())
 
 
 
 // Serving Static files
 app.use(express.static(`${__dirname}/starter/public`))
+
 
 app.all('*', (req,res,next)=>{
     next(new AppError(`Cant find ${req.originalUrl} on this server!`, 404))
