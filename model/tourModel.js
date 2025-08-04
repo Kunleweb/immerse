@@ -139,6 +139,12 @@ tourSchema.pre(/^find/, function(next){
     this.start = Date.now();
     next()
 })
+
+
+tourSchema.pre(/^find/, function(next){
+    this.populate({path:'guides', select: '-__v -passwordChangedAt'});
+    next()
+})
  
 // At post, query has executed; we therefor have access to docs and we specify it in the function
 tourSchema.post(/^find/, function(docs, next){
