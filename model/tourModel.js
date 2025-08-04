@@ -9,6 +9,31 @@ const tourSchema = new mongoose.Schema({
         // validate: [validator.isAlpha, 'Tour name must only contain characters']
     },
     slug : String,
+    startLocation:{
+       type: {
+        type: String,
+        default: 'Point', enum: ['Point']
+       },
+       coordinates: [Number], 
+       address: String,
+       description: String
+
+    },
+
+    locations: [
+        {
+            type: {
+                type:String, 
+                default: 'Point',
+                enum: ['Point']
+            },
+            coordinates: [Number],
+            address: String,
+            description: String, 
+            day: Number
+        }
+    ],
+
     duration:{
         type: String,
         required: [true, 'A tour must have a duration']
