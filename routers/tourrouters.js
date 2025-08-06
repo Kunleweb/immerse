@@ -5,10 +5,11 @@ const express = require('express')
 const router = express.Router();
 const tourController = require('./../controllers/tourController.js')
 const authController = require('./../controllers/authController.js')
-const reviewController = require('./../controllers/reviewController')
-
+const reviewrouter = require('./reviewrouter.js')
 
 // router.param('id', tourController.checkID )
+router.use('/:tourId/reviews', reviewrouter)
+
 
 
 // Create a checkbody middleware
@@ -35,11 +36,11 @@ router.route('/:id')
 .delete(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.deletetour)
 
 
-router.route('/:tourId/reviews')
-.post(
-    authController.protect,
-    reviewController.createReview
-)
+// router.route('/:tourId/reviews')
+// .post(
+//     authController.protect,
+//     reviewController.createReview
+// )
 
 
 
