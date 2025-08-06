@@ -60,12 +60,17 @@ app.use(hpp(
 
 const tourRouter = require('./routers/tourrouters');
 const userRouter = require('./routers/userRouters')
+const reviewrouter = require('./routers/reviewrouter.js')
 
 
 // ROUTES
 
 app.use('/api/v1/tours',  tourRouter)
 app.use('/api/v1/users',  userRouter)
+app.use('/api/v1/reviews', reviewrouter)
+
+
+
 
 
 
