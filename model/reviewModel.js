@@ -11,9 +11,7 @@ const ReviewSchema = new mongoose.Schema({
         createdAt: {type: Date, default:Date.now()},
 
         user: {type: mongoose.Schema.ObjectId, ref: User, required: [true, 'Review must belong to a User']},
-        tour: {type: mongoose.Schema.ObjectId, ref: Tour, required: [true, 'Review must belong to a tour']},
-
-    
+        tour: {type: mongoose.Schema.ObjectId, ref: Tour, required: [true, 'Review must belong to a tour']},    
 },
 {
     toJSON: {virtuals: true},
@@ -44,7 +42,7 @@ const ReviewSchema = new mongoose.Schema({
 // })
 
 ReviewSchema.pre(/^find/, function(next){
-    this.populate({path:'user', select: 'name'}).populate({path: 'tour', select: 'name photo'});
+    this.populate({path: 'tour', select: 'name photo'});
     next()
 })
 

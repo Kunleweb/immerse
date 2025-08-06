@@ -115,6 +115,13 @@ tourSchema.pre('save', function(next){
 
 })
 
+// local id is tour in current tourschema and tour in revuew schema
+tourSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'tour',
+    localField:'_id'
+} )
+
 
 // tourSchema.pre('save', async function(next){
 //                 const guidesPromises = this.guides.map(id => User.findById(id));
