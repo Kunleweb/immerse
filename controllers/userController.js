@@ -17,16 +17,7 @@ exports.deleteMe = catchAsync(async(req,res,next)=>{
 })
 
 
-exports.getAllusers = catchAsync(async (req, res, next) => {
-  // EXECUTE QUERY
-
-  const users = await User.find();
-
-  res
-    .status(200)
-    .json({ status: "success", results: users.length, data: {users} });
-});
-
+exports.getAllusers = factory.getAll(User)
 
 exports.updateMe = catchAsync(async (req, res,next) =>{
   // 1) Create error if user trys to post password data
@@ -62,6 +53,10 @@ exports.deleteUser = factory.deleteOne(User)
 
 
 
+exports.getMe = (req,res,next)=> {
+  req.params.id= req.user.id
+  next()
+}
 
 
 
@@ -76,13 +71,7 @@ exports.deleteUser = factory.deleteOne(User)
 
 
 
-
-exports.getUser = catchAsync(async (req, res, next) => {
-  const users = await User.findById(req.params.id);
-  if (!tour) {
-    return next(new AppError("No tour found with that ID", 404));
-  } res.status(200).json({status: "success", data: { tour }});
-});
+exports.getUser = factory.getOne(User)
 
 
 
