@@ -32,14 +32,14 @@ const Userschema =  new mongoose.Schema({
  
 })
 
-// this ensure paswword changed att property is always behing jwt timestamp
-Userschema.pre('save', function(next){
-    if (!this.isModified('password') || this.isNew ) return next();
+// // this ensure paswword changed att property is always behing jwt timestamp
+// Userschema.pre('save', function(next){
+//     if (!this.isModified('password') || this.isNew ) return next();
 
-    this.passwordChangedAt = Date.now() - 1000;
-    next()
+//     this.passwordChangedAt = Date.now() - 1000;
+//     next()
 
-})
+// })
 
 Userschema.pre(/^find/, function(next){
   // this points to the current query
@@ -50,20 +50,20 @@ Userschema.pre(/^find/, function(next){
 
 
 
-// Doocument middleware for password hashing ; this only runs this function if password was actually modfied 
-Userschema.pre('save', async function(next){
-    if(!this.isModified('password')) return next();
-// has the pasword with cost of 12 a
-    this.password = await bcrypt.hash(this.password, 12);
+// // Doocument middleware for password hashing ; this only runs this function if password was actually modfied 
+// Userschema.pre('save', async function(next){
+//     if(!this.isModified('password')) return next();
+// // has the pasword with cost of 12 a
+//     this.password = await bcrypt.hash(this.password, 12);
 
-    //  delete the passwrod confirm field
-    this.passwordConfirm = undefined;
-    next() 
+//     //  delete the passwrod confirm field
+//     this.passwordConfirm = undefined;
+//     next() 
     
 
 
 
-})
+// })
 
 
 

@@ -27,12 +27,12 @@ router.route('/monthly-plan/:year')
 .get(tourController.getMonthlyPlan)
 
 router.route('/')
-.get(authController.protect, tourController.getAlltours)
-.post(tourController.addtour);
+.get(tourController.getAlltours)
+.post(authController.protect, authController.restrictTo('admin', 'lead-guide') , tourController.addtour);
 
 router.route('/:id')
 .get(tourController.gettour)
-.patch(tourController.updatetour)   
+.patch(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.updatetour)   
 .delete(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.deletetour)
 
 
