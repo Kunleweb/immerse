@@ -54,13 +54,14 @@ const tourSchema = new mongoose.Schema({
         required: [true, 'A tour must have a difficulty'],
         enum: {values:['easy', 'medium', 'difficult'], message: 'Difficulty is easy, medium, difficult'}},
     ratingsAverage: {type: Number, default: 4.5, min: [1, 'rating must be above 1.0'],
-         max: [5, 'rating must be below 5']},
+         max: [5, 'rating must be below 5'], 
+         set: val => Math.round(val)
+        },
     
     ratingsQuantity: {
         type: Number,
-        default: 0
-
-    },
+        default: 0},
+        
     price: {type: Number, required: [true, 'A tour must have a price']},
     priceDiscount: {type:Number, 
        validate:{ validator: function(val){
