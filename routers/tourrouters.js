@@ -24,7 +24,12 @@ router.route('/tourstats')
 .get(tourController.getTourStats)
 
 router.route('/monthly-plan/:year')
-.get(tourController.getMonthlyPlan)
+.get(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.getMonthlyPlan)
+
+
+router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(tourController.getToursWithin) 
+// tours-distacne?distance=233&center=-40,  this can also work;
+router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances)
 
 router.route('/')
 .get(tourController.getAlltours)
