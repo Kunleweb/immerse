@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express');
 const morgan = require('morgan')
 const app = express()
@@ -13,6 +14,14 @@ const globalErrorHandler = require('./controllers/errorController')
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/starter/dev-data/data/tours-simple.json`));
 
 // const tourRouter = require(`${__dirname}/routers/tourrouters.js`)
+
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, 'views'))
+
+
+// Serving Static files
+// app.use(express.static(`${__dirname}/starter/public`))
+app.use(express.static(path.join(__dirname, 'starter/public')))
 
 
 // MIDDLEWARES
@@ -64,6 +73,11 @@ const reviewrouter = require('./routers/reviewrouter')
 
 
 // ROUTES
+app.get('/', (req, res)=> {
+    res.status(200).render('base', {tour:'The forest Hiker', 
+        user: 'Jonas'})
+})
+
 
 app.use('/api/v1/tours',  tourRouter)
 app.use('/api/v1/users',  userRouter)
@@ -83,8 +97,7 @@ app.use(xss())
 
 
 
-// Serving Static files
-app.use(express.static(`${__dirname}/starter/public`))
+
 
 
 app.all('*', (req,res,next)=>{
