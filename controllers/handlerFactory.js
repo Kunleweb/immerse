@@ -50,9 +50,6 @@ exports.getAll = Model => catchAsync(async (req, res) => {
 
   // to allow for nested GET reviews on tour
 
-
-
-
   const features = new APIfeatures(Model.find(), req.query)
     .filter()
     .sort()

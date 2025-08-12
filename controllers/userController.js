@@ -34,19 +34,9 @@ exports.updateMe = catchAsync(async (req, res,next) =>{
     new:true, runValidators:true
   })
 
-
-
-
-
   res.status(200).json({status: 'success', data:{user: updatedUser} })
 
-
-
-
-
 }) 
-
-
 exports.deleteUser = factory.deleteOne(User)
 
 
