@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'starter/public')))
 
 // MIDDLEWARES
 // Security HTTP Headers
-app.use(helmet())
+app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 
 
 
