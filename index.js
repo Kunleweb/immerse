@@ -7,6 +7,7 @@ const helmet = require('helmet')
 const mongoSanitize = require('express-mongo-sanitize')
 const xss = require('xss-clean')
 const hpp = require('hpp')
+const cookieParser = require('cookie-parser')
 const port = 8000
 const fs= require('fs')
 const AppError = require('./utils/appError')
@@ -51,10 +52,12 @@ if (process.env.NODE_ENV == 'development'){
 }
 // Body Parser, reading data from the body into req.body
 app.use(express.json());
+app.use(cookieParser())
 
 // Test Middlewares
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
+    console.log(req.cookies)
     next(); 
 })
 
@@ -70,7 +73,8 @@ app.use(hpp(
 const tourRouter = require('./routers/tourrouters');
 const userRouter = require('./routers/userRouters')
 const reviewrouter = require('./routers/reviewrouter')
-const viewRouter = require('./routers/viewRoutes')
+const viewRouter = require('./routers/viewRoutes');
+
 
 
 // ROUTES
