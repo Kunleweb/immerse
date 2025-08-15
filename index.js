@@ -21,7 +21,6 @@ app.set('views', path.join(__dirname, 'views'))
 
 
 // Serving Static files
-// app.use(express.static(`${__dirname}/starter/public`))
 app.use(express.static(path.join(__dirname, 'starter/public')))
 
 
