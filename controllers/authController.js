@@ -5,12 +5,13 @@ const catchAsync = require("./../utils/catchAsync");
 const  jwt = require('jsonwebtoken')
 const AppError = require('./../utils/appError')
 const sendEmail = require('./../utils/email')
+
+
+
 const signToken  = id =>{
     return jwt.sign({id}, process.env.JWT_SECRET, 
         {expiresIn: process.env.JWT_EXPIRES_IN} )  
 }
-
-
 
 
 const createSendToken = (user, statusCode, res) => {
@@ -73,7 +74,13 @@ exports.login = catchAsync(async(req, res, next) => {
 })
 
 
-
+exports.logout = (req, res)=>{
+  res.cookie('jwt', 'loggedout' ,{
+    expires: new Date(Date.now()+10*1000),
+    httpOnly: true
+  } )
+  res.status(200).json({status:'success'})
+}
     
 
 
@@ -125,9 +132,10 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 
 // This middleware if for rendered pages and there wont be an error.
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
+exports.isLoggedIn = async (req, res, next) => {
   // 1) Getting token and check of it's there
   if (req.cookies.jwt){
+    try{
     // 2)  verify the token.. 
   const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
 
@@ -142,12 +150,13 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
     return next(
     );
   }
-
   // There is a ulogged in user
   res.locals.user = currentUser;
-  return next()};
+  return next()
+}catch(err){return next()}
+};
   next();
-});
+};
 
 
 
