@@ -23,21 +23,61 @@ const handleValidationErrorDB = err => {
 
 const handleJWTError = err => new AppError('Invalid Token. Please log in again', 401)
 
-const sendErrorDev = (err, res) => {
-    res.status(err.statusCode).json({status:err.status, message:err.message, 
+const sendErrorDev = (err, req, res) => {
+    // API
+    if(req.originalUrl.startsWith('/api')){
+        res.status(err.statusCode).json({status:err.status, message:err.message, 
             error: err, stack: err.stack
-        })}
-
-
-const sendErrorProd = (err, res) =>{
-    if (err.isOperational){
-            res.status(err.statusCode).json({status:err.status, message:err.message})}
-           else{
-            console.error('ERROR', err)
-                res.status(500).json({status:'error💥', message:'something went very wrong'})
-           }  
-    
+        })
+    }
+    else{
+        // rendered website
+        res.status(err.statusCode).render('error', {
+            title: 'Something went wrong!', msg:err.message
+        })
+    }
 }
+
+
+const sendErrorProd = (err, req, res) => {
+  // A) API
+  if (req.originalUrl.startsWith('/api')) {
+    // A) Operational, trusted error: send message to client
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message
+      });
+    }
+    // B) Programming or other unknown error: don't leak error details
+    // 1) Log error
+    console.error('ERROR 💥', err);
+    // 2) Send generic message
+    return res.status(500).json({
+      status: 'error',
+      message: 'Something went very wrong!'
+    });
+  }
+
+  // B) RENDERED WEBSITE
+  // A) Operational, trusted error: send message to client
+  if (err.isOperational) {
+    console.log(err);
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message
+    });
+  }
+  // B) Programming or other unknown error: don't leak error details
+  // 1) Log error
+  console.error('ERROR 💥', err);
+  // 2) Send generic message
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: 'Please try again later.'
+  });
+};
+
 
 
 module.exports= (err, req, res, next)=>{
@@ -45,7 +85,7 @@ module.exports= (err, req, res, next)=>{
     err.status = err.status || 'error';
 
     if (process.env.NODE_ENV === 'development'){
-       sendErrorDev(err, res)} 
+       sendErrorDev(err,req, res)} 
        
     else if (process.env.NODE_ENV === 'production'){
         
@@ -53,7 +93,7 @@ module.exports= (err, req, res, next)=>{
         if(err.code === 11000) err = handleDuplicateFieldsDB(err); 
         if(err.name === 'ValidationError') err = handleValidationErrorDB(err);
         if(err.name === 'JsonWebTokenError') err = handleJWTError(err)
-        sendErrorProd(err, res)} ;
+        sendErrorProd(err,req, res)} ;
     }
 
 
