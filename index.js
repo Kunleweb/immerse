@@ -10,6 +10,7 @@ const hpp = require('hpp')
 const cookieParser = require('cookie-parser')
 const port = 8000
 const fs= require('fs')
+const compression = require('compression')
 const AppError = require('./utils/appError')
 const globalErrorHandler = require('./controllers/errorController')
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/starter/dev-data/data/tours-simple.json`));
@@ -53,11 +54,12 @@ if (process.env.NODE_ENV == 'development'){
 // Body Parser, reading data from the body into req.body
 app.use(express.json());
 app.use(cookieParser())
+app.use(compression())
 
 // Test Middlewares
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
-    console.log(req.cookies)
+    // console.log(req.cookies)
     next(); 
 })
 
