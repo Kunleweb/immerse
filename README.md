@@ -11,10 +11,7 @@ A web-based **Tour Booking Application** backend built with **Node.js** and **Ex
 - [Features](#features)  
 - [Technologies](#technologies)  
 - [Installation](#installation)  
-- [Usage](#usage)  
-- [API Endpoints](#api-endpoints)  
-- [Contributing](#contributing)  
-- [License](#license)  
+
 
 ---
 
